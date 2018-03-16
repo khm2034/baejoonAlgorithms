@@ -1,67 +1,34 @@
-#include<iostream>
-#include<vector>
-
+#include <cstdio>
 using namespace std;
 
-int fibo(int n);
+int dp[41][2] = { 0, };
 
-class PrintVal
+int fibo(int n, int x)
 {
-public:
-	int zero;
-	int one;
+	if (n == 0 || n == 1)
+		if (n == x)
+			return dp[n][x] = 1;
+		else
+			return 0;
+	int& ret = dp[n][x];
 
-	PrintVal(int zero, int one)
-	{
-		this->zero = zero;
-		this->one = one;
-	}
-};
+	if (ret != 0)
+		return ret;
 
-int zeroNum = 0;
-int oneNum = 0;
-
-int inputVal;
-vector<PrintVal*> printArr;
+	return ret = fibo(n - 1, x) + fibo(n - 2, x);
+}
 
 int main()
 {
-	int testcase;
-
-	cin >> testcase;
-
-	for (int i = 0; i < testcase; i++)
+	int T;
+	scanf("%d", &T);
+	for (int tc = 0; tc < T; tc++)
 	{
-		int tmpVal;
-		cin >> tmpVal;
-		fibo(tmpVal);
-		printArr.push_back(new PrintVal(zeroNum, oneNum));
-		zeroNum = 0;
-		oneNum = 0;
+		int n, result[2];
+		scanf("%d", &n);
+		result[0] = fibo(n, 0);
+		result[1] = fibo(n, 1);
+		printf("%d %d\n", result[0], result[1]);
 	}
-
-	for (int i = 0; i < printArr.size(); i++)
-	{
-		cout << printArr[i]->zero << " " << printArr[i]->one << endl;
-	}
-
 	return 0;
-}
-
-int fibo(int n)
-{
-	if (n == 0)
-	{
-		zeroNum++;
-		return 0;
-	}
-	else if (n == 1)
-	{
-		oneNum++;
-		return 1;
-	}
-	else
-	{
-		return fibo(n - 1) + fibo(n - 2);
-	}
 }

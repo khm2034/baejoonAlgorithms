@@ -1,45 +1,55 @@
-//#include <iostream>
-//using namespace std;
-//
-//int n;
-//int dp[1001][4][2];
-//
-//void inputData()
-//{
-//	cin >> n;
-//	for (int i = 0; i < n+1; i++)
-//		for (int j = 0; j < 4; j++)
-//			for (int k = 0; k < 2; k++)
-//				dp[i][j][k] = -1;
-//}
-//
-//int solution(int cur, int state, int cnt)
-//{
-//	if (cnt >= 2)
-//		return 0;
-//	int& ret = dp[cur][state][cnt];
-//	
-//	if (ret != -1)
-//		return ret;
-//	if (cur == n-1)
-//		return 1;
-//
-//	if (state == 0)
-//		return ret = (solution(cur + 1, 0, cnt) + solution(cur + 1, 1, cnt + 1) + solution(cur + 1, 2, cnt)) % 1000000;
-//	else if (state == 1)
-//		return ret = (solution(cur + 1, 0, cnt) + solution(cur + 1, 2, cnt)) % 1000000;
-//	else if (state == 2)
-//		return ret = (solution(cur + 1, 0, cnt) + solution(cur + 1, 1, cnt + 1) + solution(cur + 1, 3, cnt)) % 1000000;
-//	else
-//		return ret = (solution(cur + 1, 0, cnt) + solution(cur + 1, 1, cnt + 1)) % 1000000;
-//}
-//
-//int main()
-//{
-//	inputData();
-//	cout << (solution(0,0,0) + solution(0,1,1) + solution(0, 2, 0)) % 1000000 << endl;
-//
-//	return 0;
-//}
-//
-//
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int arr[50001];
+int dp[3][50001];
+int sumDp[50001];
+int N, maxN;
+void inputData()
+{
+	cin >> N;
+	for (int i = 0; i < N; i++)
+		cin >> arr[i];
+	cin >> maxN;
+}
+
+int getSum(int n)
+{
+	if (sumDp[n] != 0)
+		return sumDp[n];
+	int ret = 0;
+	for (int i = 0; i < maxN; i++)
+	{
+		if (i + n == 50000)
+			break;
+		ret += arr[i + n];
+	}
+	return sumDp[n] = ret;
+}
+
+int solve(int small, int n)
+{
+	if (small == 3)
+		return 0;
+	if (n >= N)
+		return 0;
+	int& ret = dp[small][n];
+
+	if (ret != 0)
+		return ret;
+
+	ret = max(solve(small, n + 1), solve(small + 1, n + maxN) + getSum(n));
+
+	return ret;
+}
+
+int main()
+{
+	freopen("input.txt", "r", stdin);
+	inputData();
+	int result = solve(0, 0);
+	cout << result << "\n";
+	
+	return 0;
+}
