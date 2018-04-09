@@ -1,103 +1,76 @@
 #include<iostream>
-#define QUEUESIZE (52*2+5)
+#include<memory.h>
+#define QUEUESIZE 2505
 using namespace std;
 
-
-int map[52][52];
-int visit[52][52];
-int w;
-int h;
-
-int dx[8] = { 1, 1, 0 ,-1, -1, -1, 0, 1 };
+int W, H;
+int map[51][51];
+bool visit[51][51];
+pair<int, int> q[2505];
+int front, rear;
+int dx[8] = { 1, 1, 0, -1, -1, -1, 0, 1 };
 int dy[8] = { 0, 1, 1, 1, 0, -1, -1, -1 };
-int cnt = 0;
-
-void init()
-{
-	cnt = 0;
-	for (int i = 0; i <= h + 1; i++)
-		for (int j = 0; j <= w + 1; j++)
-			map[i][j] = visit[i][j] = 0;
-}
-
-void inputData()
-{
-	init();
-	for (int i = 1; i <= h; i++)
-		for (int j = 1; j <= w; j++)
-			cin >> map[i][j];
-}
-
-struct point {
-	int x;
-	int y;
-};
-
-point queue[QUEUESIZE];
-int front = 0;
-int rear = 0;
-
 void push(int x, int y)
 {
 	rear++;
 	rear = rear % QUEUESIZE;
-	queue[rear].x = x;
-	queue[rear].y = y;
+	q[rear].first = x;
+	q[rear].second = y;
 }
-
-point pop()
+pair<int, int> pop()
 {
 	front++;
 	front = front % QUEUESIZE;
-	return queue[front];
+	return q[front];
 }
-
+bool safe(int x, int y)
+{
+	return x >= 0 && x < W && y >= 0 && y < H;
+}
 
 void bfs(int x, int y)
 {
-	cnt++;
 	push(x, y);
-	visit[y][x] = 1;
-
+	visit[y][x] = true;
 	while (rear != front)
 	{
-		point t = pop();
-
+		pair<int, int> t = pop();
+		int tx, ty;
 		for (int i = 0; i < 8; i++)
 		{
-			int tmpX = t.x + dx[i];
-			int tmpY = t.y + dy[i];
-
-			if (map[tmpY][tmpX] == 1 && visit[tmpY][tmpX] == 0)
+			tx = t.first + dx[i];
+			ty = t.second + dy[i];
+			if (safe(tx, ty) && map[ty][tx] && !visit[ty][tx])
 			{
-				push(tmpX, tmpY);
-				visit[tmpY][tmpX] = 1;
+				visit[ty][tx] = true;
+				push(tx, ty);
 			}
 		}
 	}
 }
 
-void solution()
-{
-	for (int i = 1; i <= h; i++)
-		for (int j = 1; j <= w; j++)
-			if (map[i][j] == 1 && visit[i][j] == 0)
-				bfs(j, i);
-}
-
 int main()
 {
-	freopen("input.txt", "r", stdin);
 	while (1)
 	{
-		cin >> w >> h;
-		if (w == 0 && h == 0)
+		memset(map, 0, sizeof(map));
+		memset(visit, false, sizeof(visit));
+		cin >> W >> H;
+		if (!W && !H)
 			break;
+		for (int i = 0; i<H; i++)
+			for (int j = 0; j < W; j++)
+				cin >> map[i][j];
 
-		inputData();
-		solution();
+		int cnt = 0;
+		for (int i = 0; i < H; i++)
+			for (int j = 0; j < W; j++)
+				if (map[i][j] && !visit[i][j])
+				{
+					bfs(j, i);
+					cnt++;
+				}
 		cout << cnt << "\n";
 	}
-	
 	return 0;
 }

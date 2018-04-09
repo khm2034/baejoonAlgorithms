@@ -1,90 +1,85 @@
-#include <iostream>
-
+#include<iostream>
+#include<memory.h>
+#define QUEUESIZE 2505
 using namespace std;
 
-void input();
-void solution(int t);
-void check(int x, int y);
-
+int N, M, K;
 int T;
-int M;
-int N;
-int K;
-int map[52][52];
-int visit[52][52];
-int cnt;
-int* result;
+int map[51][51];
+bool visit[51][51];
 
-int dx[4] = { 1, -1, 0, 0 };
-int dy[4] = { 0, 0, 1, -1 };
+pair<int, int> q[QUEUESIZE];
+int rear, front;
+
+int dx[4] = { 1, 0, -1, 0 };
+int dy[4] = { 0, 1, 0, -1 };
+void push(int x, int y)
+{
+	rear++;
+	rear = rear % QUEUESIZE;
+	q[rear].first = x;
+	q[rear].second = y;
+}
+
+pair<int, int> pop()
+{
+	front++;
+	front = front % QUEUESIZE;
+	return q[front];
+}
+
+bool safe(int x, int y)
+{
+	return x >= 0 && x < M && y >= 0 && y < N;
+}
+
+void bfs(int x, int y)
+{
+	push(x, y);
+	visit[y][x] = true;
+	while (front != rear)
+	{
+		pair<int, int> t = pop();
+		int tx, ty;
+		for (int i = 0; i < 4; i++)
+		{
+			tx = t.first + dx[i];
+			ty = t.second + dy[i];
+			if (safe(tx, ty) && map[ty][tx] && !visit[ty][tx])
+			{
+				visit[ty][tx] = true;
+				push(tx, ty);
+			}
+		}
+	}
+}
 
 int main()
 {
 	cin >> T;
-	result = new int[T];
-	for (int t = 0; t < T; t++)
+	for (int tc = 0; tc < T; tc++)
 	{
-		input();
-		solution(t);
-	}
+		memset(map, 0, sizeof(map));
+		memset(visit, false, sizeof(visit));
+		cin >> M >> N >> K;
+		int x, y;
+		int cnt = 0;
+		for (int i = 0; i < K; i++)
+		{
+			cin >> x >> y;
+			map[y][x] = 1;
+		}
+		for (int i = 0; i<N; i++)
+			for (int j = 0; j < M; j++)
+			{
+				if (map[i][j] && !visit[i][j])
+				{
+					bfs(j, i);
+					cnt++;
+				}
+			}
 
-	for (int t = 0; t < T; t++)
-	{
-		cout << result[t] << endl;
+		cout << cnt << "\n";
 	}
 	return 0;
-}
-
-void input()
-{
-	cin >> M >> N >> K;
-
-	cnt = 0;
-	for (int i = 0; i <= M + 1; i++)
-	{
-		for (int j = 0; j <= N + 1; j++)
-		{
-			map[i][j] = 0;
-			visit[i][j] = 0;
-		}
-	}
-
-	for (int i = 0; i < K; i++)
-	{
-		int x, y;
-
-		cin >> x >> y;
-
-		map[x + 1][y + 1] = 1;
-	}
-}
-
-void solution(int t)
-{
-	for (int i = 1; i <= M; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			if (visit[i][j] == 0 && map[i][j] == 1)
-			{
-				cnt++;
-				check(i, j);
-			}
-		}
-	}
-
-	result[t] = cnt;
-}
-
-void check(int x, int y)
-{
-	visit[x][y] = 1;
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (visit[x + dx[i]][y + dy[i]] == 0 && map[x + dx[i]][y + dy[i]] == 1)
-		{
-			check(x + dx[i], y + dy[i]);
-		}
-	}
 }

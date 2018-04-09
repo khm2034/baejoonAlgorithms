@@ -1,101 +1,50 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-
+#include<iostream>
+#include<cstdio>
+#include<vector>
+#include<memory.h>
 using namespace std;
 
-void solution(int n);
+int T, N, K, W;
+int to, from;
+int time[1001];
+vector<int> graph[1001];
+int visit[1001];
 
-int buildTime[1000] = { 0, };
-int resultTime[1000] = { 0 };
-int buildNum = 0;
-int order = 0;
-vector<vector<int>*> arr;
-int visit[1000] = { 0, };
+int dfs(int n)
+{
+	int size = graph[n].size();
+	if (size == 0)
+		return 0;
+	int max = -1e9;
+	for (int i = 0; i < size; i++)
+	{
+		if (visit[graph[n][i]] == -1)
+			visit[graph[n][i]] += (dfs(graph[n][i]) + time[graph[n][i]] + 1);
+		if (max < visit[graph[n][i]])
+			max = visit[graph[n][i]];
+	}
+	return max;
+}
 
 int main()
 {
-	int testCase;
-
-	cin >> testCase;
-
-	for (int i = 0; i < testCase; i++)
+	scanf("%d", &T);
+	for (int tc = 0; tc < T; tc++)
 	{
-		fill_n(buildTime, 1000, 0);
-		fill_n(resultTime, 1000, 0);
-		fill_n(visit, 1000, 0);
-		buildNum = 0;
-		order = 0;
-
-		cin >> buildNum >> order;
-		for (int j = 0; j < buildNum; j++)
+		memset(time, 0, sizeof(time));
+		memset(visit, -1, sizeof(visit));
+		for (int i = 1; i <= N; i++)
+			graph[i].clear();
+		scanf("%d%d", &N, &K);
+		for (int i = 1; i <= N; i++)
+			scanf("%d", &time[i]);
+		for (int i = 0; i < K; i++)
 		{
-			cin >> buildTime[j];
-			arr.push_back(new vector<int>);
+			scanf("%d%d", &to, &from);
+			graph[from].push_back(to);
 		}
-
-
-		for (int j = 0; j < order; j++)
-		{
-			int sTmp;
-			int eTmp;
-
-			cin >> sTmp >> eTmp;
-			
-			arr[eTmp - 1]->push_back(sTmp - 1);
-			
-		}
-
-
-		for (int j = 0; j < arr.size(); j++)
-		{
-			sort(arr[j]->begin(), arr[j]->end());
-		}
-
-		for (int j = 0; j < arr.size(); j++)
-		{
-			solution(j);
-		}
-
-		int resultNum;
-		cin >> resultNum;
-		cout << resultTime[resultNum - 1] << endl;
-		arr.clear();
+		scanf("%d", &W);
+		printf("%d\n", dfs(W) + time[W]);
 	}
-}
-
-void solution(int n)
-{
-	if (visit[n] == 1)
-		return;
-
-	if (arr[n]->size() == 0)
-	{
-		resultTime[n] = buildTime[n];
-	}
-	else
-	{
-		for (int k = 0; k < arr[n]->size(); k++)
-		{
-			if (resultTime[(*arr[n])[k]] != 0)
-			{
-				if (resultTime[n] == 0)
-				{
-					resultTime[n] = resultTime[(*arr[n])[k]] + buildTime[n];
-				}
-				else
-				{
-					if (resultTime[n] < resultTime[(*arr[n])[k]] + buildTime[n])
-						resultTime[n] = resultTime[(*arr[n])[k]] + buildTime[n];
-				}
-			}
-			else if (resultTime[(*arr[n])[k]] == 0)
-			{
-				solution((*arr[n])[k]);
-				k--;
-			}
-		}
-	}
-
-	visit[n] = 1;
+	return 0;
 }

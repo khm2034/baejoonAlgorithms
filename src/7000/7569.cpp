@@ -1,122 +1,81 @@
+#include <cstdio>
 #include <iostream>
-#include <queue>
+#define QUEUESIZE 1000005
 using namespace std;
 
-void intputData();
-int solution();
-void checking();
-void pushPoint(int x, int y, int h);
-
-
-struct Point {
-	int x;
-	int y;
-	int h;
+struct p {
+	int x, y, z;
 };
+int M, N, H;
+int map[101][101][101];
+int dx[6] = { 1, 0, -1, 0, 0, 0 };
+int dy[6] = { 0, 1, 0, -1, 0, 0 };
+int dz[6] = { 0, 0, 0, 0, 1, -1 };
+p q[QUEUESIZE];
+int front, rear;
+void push(int x, int y, int z)
+{
+	rear++;
+	rear = rear % QUEUESIZE;
+	q[rear].x = x;
+	q[rear].y = y;
+	q[rear].z = z;
+}
+p pop()
+{
+	front++;
+	front = front % QUEUESIZE;
+	return q[front];
+}
 
+bool safe(int x, int y, int z)
+{
+	return x >= 0 && x < M && y >= 0 && y < N && z >= 0 && z < H;
+}
 
-int sizeX;
-int sizeY;
-int sizeH;
-int arr[102][102][102];
-int visit[102][102][102];
-
-queue<Point*> onePoint;
-Point* tmp;
-int cntZero = 0;
-int cntOne = 0;
-int cntEtc = 0;
-int day = 0;
-
-int dx[6] = { -1 , 1, 0 ,0, 0, 0 };
-int dy[6] = { 0, 0, -1, 1, 0, 0 };
-int dh[6] = { 0, 0, 0, 0, -1, 1 };
-
+void bfs()
+{
+	while (front != rear)
+	{
+		p t = pop();
+		int tx, ty, tz;
+		for (int i = 0; i < 6; i++)
+		{
+			tx = t.x + dx[i]; ty = t.y + dy[i]; tz = t.z + dz[i];
+			if (safe(tx, ty, tz) && !map[tz][ty][tx])
+			{
+				map[tz][ty][tx] = map[t.z][t.y][t.x] + 1;
+				push(tx, ty, tz);
+			}
+		}
+	}
+}
 
 int main()
 {
-	intputData();
-	int result = solution();
-	cout << result << endl;
+	scanf("%d%d%d", &M, &N, &H);
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < N; j++)
+			for (int k = 0; k < M; k++)
+			{
+				scanf("%d", &map[i][j][k]);
+				if (map[i][j][k] == 1)
+					push(k, j, i);
+			}
+	bfs();
+	int ret = 0;
+	for (int i = 0; i < H; i++)
+		for (int j = 0; j < N; j++)
+			for (int k = 0; k < M; k++)
+			{
+				if (!map[i][j][k])
+				{
+					printf("-1\n");
+					return 0;
+				}
+				if (ret < map[i][j][k])
+					ret = map[i][j][k];
+			}
+	printf("%d\n", ret - 1);
 	return 0;
-}
-
-void intputData()
-{
-	cin >> sizeX >> sizeY >> sizeH;
-
-	for(int h= 0; h <= sizeH +1; h++)
-		for (int y = 0; y <= sizeY + 1; y++)
-			for (int x = 0; x <= sizeX + 1; x++)
-			{
-				arr[h][y][x] = -1;
-				visit[h][y][x] = 0;
-			}
-
-	for(int h=1; h <sizeH + 1; h++)
-		for (int y = 1; y < sizeY + 1; y++)
-		{
-			for (int x = 1; x < sizeX + 1; x++)
-			{
-				cin >> arr[h][y][x];
-
-				if (arr[h][y][x] == 0)
-				{
-					cntZero++;
-				}
-				else if (arr[h][y][x] == 1)
-				{
-					cntOne++;
-					pushPoint(x, y, h);
-				}
-			}
-		}
-}
-
-int solution()
-{
-	while (!onePoint.empty())
-	{
-		checking();
-		onePoint.pop();
-	}
-
-
-	if (cntZero != 0)
-		return -1;
-	else
-	{
-		for(int h=1; h< sizeH+1; h++)
-			for (int y = 1; y < sizeY + 1; y++)
-				for (int x = 1; x < sizeX + 1; x++)
-					if (day < visit[h][y][x])
-						day = visit[h][y][x];
-
-		return day;
-	}
-}
-void checking()
-{
-	int x = onePoint.front()->x;
-	int y = onePoint.front()->y;
-	int h = onePoint.front()->h;
-	for (int i = 0; i < 6; i++)
-	{
-		if (arr[h + dh[i]][y + dy[i]][x + dx[i]] == 0)
-		{
-			arr[h + dh[i]][y + dy[i]][x + dx[i]] = 1;
-			pushPoint(x + dx[i], y + dy[i], h + dh[i]);
-			visit[h + dh[i]][y + dy[i]][x + dx[i]] = visit[h][y][x] + 1;
-			cntZero--;
-		}
-	}
-}
-
-void pushPoint(int x, int y,int h)
-{
-	tmp = new Point();
-	tmp->x = x;
-	tmp->y = y;
-	tmp->h = h;
-	onePoint.push(tmp);
 }

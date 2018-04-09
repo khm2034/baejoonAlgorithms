@@ -1,185 +1,78 @@
-#include <iostream>
-#include <vector>
-
+#include<iostream>
+#include<cstdio>
+#include<memory.h>
+#define QUEUESIZE (1000*1000*5)
 using namespace std;
 
-struct Point {
-	int x;
-	int y;
-};
+int N, M;
+int map[1001][1001];
+int dx[4] = { 1, 0, -1, 0 };
+int dy[4] = { 0, -1, 0, 1 };
+pair<int, int> q[QUEUESIZE];
 
-int size_x;
-int size_y;
-int arr[1001][1001];
-int cnt_zero = 0;
-int cnt_one = 0;
-int cnt_not = 0;
-int day = 0 ;
-bool isChange;
-vector<Point*> cp;
-Point* tmp;
+int rear = 0;
+int front = 0;
+int ret = 0;
+void push(int x, int y)
+{
+	rear++;
+	rear = rear%QUEUESIZE;
+	q[rear].first = x;
+	q[rear].second = y;
+}
+pair<int, int> pop()
+{
+	front++;
+	front = front%QUEUESIZE;
+	return q[front];
+}
 
-void inputData();
-int solution();
-void inputVector(int x, int y);
-void checking();
-void printArr();
+bool safe(int x, int y)
+{
+	return x >= 0 && x < N && y >= 0 && y < M;
+}
 
+void bfs()
+{
+	while (rear != front)
+	{
+		pair<int, int> t = pop();
+		for (int i = 0; i < 4; i++)
+		{
+			int tmp_x = t.first + dx[i];
+			int tmp_y = t.second + dy[i];
+			if (safe(tmp_x, tmp_y) && map[tmp_y][tmp_x] == 0)
+			{
+				map[tmp_y][tmp_x] = map[t.second][t.first] + 1;
+				push(tmp_x, tmp_y);
+				if (ret < map[tmp_y][tmp_x]-1)
+					ret = map[tmp_y][tmp_x]-1;
+			}
+		}
+	}
+}
+int chk()
+{
+	for (int i = 0; i < M; i++)
+		for (int j = 0; j < N; j++)
+			if (!map[i][j])
+				return -1;
+	return ret;
+}
 int main()
 {
-	inputData();
-	int result = solution();
-	cout << result << endl;
-}
-
-void inputData() 
-{
-	cin >> size_x >> size_y;
-
-	for (int i = 0; i < size_y; i++) 
-	{
-		for (int j = 0; j < size_x; j++)
+	scanf("%d%d", &N, &M);
+	int tmp;
+	for (int i = 0; i < M; i++)
+		for (int j = 0; j < N; j++)
 		{
-			cin >> arr[i][j];
-			if (arr[i][j] == 0)
-				cnt_zero++;
-			else if (arr[i][j] == 1)
-				cnt_one++;
-			else
-				cnt_not++;
-		}
-	}
-}
-
-int solution()
-{
-	while (true)
-	{
-		isChange = false;
-		if (cnt_zero == 0)
-			return day;
-
-		checking();
-
-		if (!isChange)
-		{
-			return -1;
+			scanf("%d", &tmp);
+			if (tmp == 1)
+				push(j, i);
+			map[i][j] = tmp;
 		}
 
-		for (int i = 0; i < cp.size(); i++) 
-		{
-			arr[cp[i]->y][cp[i]->x] = 1;
-		}
-		cp.clear();
-		printArr();
-		day++;
-	}
-}
-
-void checking()
-{
-	int tmp_one = cnt_one;
-	int tmp_not = cnt_not;
-
-	for (int i = 0; i < size_y; i++)
-	{
-		for (int j = 0; j < size_x; j++)
-		{
-			if (arr[i][j] == 0)
-			{
-				if (i == 0)
-				{
-					if (j == 0)
-					{
-						if ((arr[i + 1][j] == 1) || (arr[i][j + 1] == 1))
-							inputVector(j, i);
-					}
-					else if (j == (size_x - 1))
-					{
-						if ((arr[i + 1][j] == 1) || (arr[i][j - 1] == 1))
-							inputVector(j, i);
-					}
-					else
-					{
-						if ((arr[i + 1][j] == 1) || (arr[i][j - 1] == 1)
-							|| (arr[i][j + 1] == 1))
-							inputVector(j, i);
-					}
-				}
-				else if (i == (size_y - 1))
-				{
-					if (j == 0)
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i][j + 1] == 1))
-							inputVector(j, i);
-					}
-					else if (j == (size_x - 1))
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i][j - 1] == 1))
-							inputVector(j, i);
-					}
-					else
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i][j - 1] == 1)
-							|| (arr[i][j + 1] == 1))
-							inputVector(j, i);
-					}
-				}
-				else
-				{
-					if (j == 0)
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i][j + 1] == 1)
-							|| (arr[i + 1][j] == 1))
-							inputVector(j, i);
-					}
-					else if (j == (size_x - 1))
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i][j - 1] == 1)
-							|| (arr[i + 1][j] == 1))
-							inputVector(j, i);
-					}
-					else
-					{
-						if ((arr[i - 1][j] == 1) || (arr[i + 1][j] == 1)
-							|| (arr[i][j - 1] == 1) || (arr[i][j + 1] == 1))
-							inputVector(j, i);
-					}
-				}
-			}
-			else if (arr[i][j] == 1)
-				tmp_one--;
-			else
-				tmp_not--;
-
-			if ((size_x*size_y) == ((i*size_x) + j + 1 + tmp_one + tmp_not))
-			{
-				cout << "checkingOut" << endl;
-				return;
-			}
-		}
-	}
-}
-
-void inputVector(int x, int y)
-{
-	tmp = new Point();
-	tmp->x = x;
-	tmp->y = y;
-
-	cp.push_back(tmp);
-	cnt_zero--;
-	isChange = true;
-}
-
-void printArr()
-{
-	for (int i = 0; i < size_y; i++)
-	{
-		for (int j = 0; j < size_x; j++)
-		{
-			cout << arr[i][j];
-		}
-		cout << endl;
-	}
+	bfs();
+	printf("%d\n", chk());
+	return 0;
 }

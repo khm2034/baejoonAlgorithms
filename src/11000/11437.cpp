@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
 using namespace std;
 
@@ -6,7 +7,6 @@ vector<vector<int>> graph;
 int visit[100005] = { 0, };
 int depth[100005] = { 0, };
 int parent[100005] = { 0, };
-
 
 void dfs(int here, int d)
 {
@@ -28,12 +28,12 @@ void dfs(int here, int d)
 void inputData()
 {
 	int N;
-	cin >> N;
+	scanf("%d", &N);
 	graph.resize(N + 1);
 	int a, b;
 	for (int i = 0; i < N - 1; i++)
 	{
-		cin >> a >> b;
+		scanf("%d%d", &a, &b);
 		graph[a].push_back(b);
 		graph[b].push_back(a);
 	}
@@ -45,10 +45,10 @@ void solution()
 
 	int M;
 	int a, b;
-	cin >> M;
+	scanf("%d", &M);
 	for (int i = 0; i < M; i++)
 	{
-		cin >> a >> b;
+		scanf("%d%d", &a, &b);
 		if (depth[a] < depth[b])
 		{
 			int tmp = a;
@@ -67,7 +67,7 @@ void solution()
 			b = parent[b];
 		}
 
-		cout << a << "\n";
+		printf("%d\n", a);
 	}
 }
 
