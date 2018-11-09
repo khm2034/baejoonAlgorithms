@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-vector<vector<int>> graph;
+vector<vector<int>> node;
 vector<vector<int>> length;
 int visit[40001] = { 0, };
 int depth[40001] = { 0, };
@@ -15,9 +15,9 @@ void dfs(int here, int d)
 	visit[here] = 1;
 	depth[here] = d;
 
-	for (int i = 0; i < graph[here].size(); i++)
+	for (int i = 0; i < node[here].size(); i++)
 	{
-		int there = graph[here][i];
+		int there = node[here][i];
 		int len = length[here][i];
 		if (visit[there] == 0)
 		{
@@ -33,14 +33,14 @@ void inputData()
 {
 	int N;
 	cin >> N;
-	graph.resize(N + 1);
+	node.resize(N + 1);
 	length.resize(N + 1);
 	int a, b, len;
 	for (int i = 0; i < N - 1; i++)
 	{
 		cin >> a >> b >> len;
-		graph[a].push_back(b);
-		graph[b].push_back(a);
+		node[a].push_back(b);
+		node[b].push_back(a);
 		length[a].push_back(len);
 		length[b].push_back(len);
 	}

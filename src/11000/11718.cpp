@@ -1,12 +1,6 @@
-#include <iostream>
-#include <cstdio>
-using namespace std;
-
-int main()
-{
-	freopen("input.txt", "r", stdin);
-	char s;
-	while (scanf("%c", &s) != EOF)
-		printf("%c", s);
+#include<cstdio>
+int main() {
+	char c;
+	while (scanf("%c", &c) != EOF) printf("%c", c);
 	return 0;
 }

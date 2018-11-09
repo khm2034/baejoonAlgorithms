@@ -1,69 +1,18 @@
 #include<cstdio>
-using namespace std;
-
-struct Node
-{
-	int n;
-	Node* next;
-	Node* pre;
-	Node(){}
-	Node(int _n, Node* _next, Node* _pre)
-	{
-		n = _n; next = _next; pre = _pre;
-	}
-};
-
-Node* head;
-Node* cur;
+#include<queue>
 int N, M;
-void insert(int i)
-{
-	Node* tmp = new Node(i, nullptr, nullptr);
-	Node* tail = head->next->pre;
-
-	tmp->next = tail->next;
-	tmp->pre = tail;
-	tail->next->pre = tmp;
-	tail->next = tmp;
-}
-
-void pop()
-{
-	Node* tmp = cur;
-	cur->next->pre = tmp->pre;
-	cur->pre->next = tmp->next;
-	cur = cur->pre;
-	delete tmp;
-}
-int main()
-{
-	head = new Node();
-	cur = new Node(-1, nullptr, nullptr);
-	cur->next = cur;
-	cur->pre = cur;
-	head->next = cur;
-
+std::queue<int> q;
+int main() {
 	scanf("%d%d", &N, &M);
-	for (int i = 0; i < N; i++)
-		insert(i + 1);
-	int cnt = 0;
-	cur = head->next;
+	for (int i = 1; i <= N; i++) q.push(i);
 	printf("<");
-	while (cnt != N)
-	{
-		cnt++;
-		for (int i = 0; i < M; i++)
-		{
-			cur = cur->next;
-			if(cur->n < 0)
-				cur = cur->next;
+	while (q.size() != 1) {
+		for (int i = 0; i < M - 1; i++) {
+			q.push(q.front()); q.pop();
 		}
-		if(cnt == N)
-			printf("%d", cur->n);
-		else
-			printf("%d, ", cur->n);
-		pop();
+		printf("%d, ", q.front());
+		q.pop();
 	}
-	printf(">");
+	printf("%d>", q.front());
 	return 0;
 }

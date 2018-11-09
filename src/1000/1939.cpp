@@ -5,7 +5,7 @@
 #define QUEUESIZE 10000005
 #define INF ((1<<31)-1)
 using namespace std;
-vector<pair<int, int>> graph[10001];
+vector<pair<int, int>> node[10001];
 bool visit[10001];
 int N, M;
 pair<int, int> q[QUEUESIZE];
@@ -31,11 +31,11 @@ bool bfs(int from, int to, int val)
 	while (rear != front)
 	{
 		pair<int, int> t = pop();
-		int size = graph[t.first].size();
+		int size = node[t.first].size();
 		for (int i = 0; i < size; i++)
 		{
-			int t_to = graph[t.first][i].first;
-			int t_val = graph[t.first][i].second;
+			int t_to = node[t.first][i].first;
+			int t_val = node[t.first][i].second;
 			if (!visit[t_to] && val <= t_val)
 			{
 				visit[t_to] = true;
@@ -57,8 +57,8 @@ int main()
 		cin >> from >> to >> val;
 		pair<int, int> t1(from, val);
 		pair<int, int> t2(to, val);
-		graph[to].push_back(t1);
-		graph[from].push_back(t2);
+		node[to].push_back(t1);
+		node[from].push_back(t2);
 		if (le > val)
 			le = val;
 		if (ri < val)

@@ -1,124 +1,37 @@
-#include <iostream>
-#define MAXSIZE 1000001
+#include<iostream>
+#include<vector>
 using namespace std;
 
-int TC;
+int T;
+vector<char> s1, s2;
 char s[1000001];
-int sLength;
-
-class stack
-{
-public:
-	int top;
-	char arr[MAXSIZE];
-
-	stack()
-	{
-		top = 0;
-		for (int i = 0; i < MAXSIZE; i++)
-		{
-			arr[i] = NULL;
-		}
-	}
-
-	char pop()
-	{
-		return arr[--top];
-	}
-
-	void push(char item)
-	{
-		arr[top++] = item;
-	}
-
-	void init()
-	{
-		top = 0;
-		for (int i = 0; i < MAXSIZE; i++)
-		{
-			arr[i] = NULL;
-		}
-	}
-	
-	void print()
-	{
-		for (int i = 0; i < top; i++)
-			cout << arr[i];
-	}
-
-	void reversePrint()
-	{
-		for (int i = top-1; i >= 0; i--)
-			cout << arr[i];
-	}
-};
-
-stack s1;
-stack s2;
-
-void init()
-{
-	sLength = 0;
-	s1.init();
-	s2.init();
-	for (int i = 0; i < MAXSIZE; i++)
-		s[i] = NULL;
-}
-
-void strLength()
-{
-	for (int i = 0; s[i] != NULL; i++)
-		sLength++;
-}
-
-void inputData()
-{
-	init();
-
-	cin >> s;
-	strLength();
-}
-
-void solution()
-{
-	for (int i = 0; i < sLength; i++)
-	{
-		switch (s[i])
-		{
-		case '<':
-			if (s1.top == 0)
+int main() {
+	scanf("%d", &T);
+	while (T--) {
+		s1.clear(); s2.clear();
+		scanf("%s", s);
+		for (int i = 0; s[i]; i++) {
+			switch (s[i]) {
+			case '<':
+				if (s1.size() == 0) break;
+				s2.push_back(s1.back()); s1.pop_back();
 				break;
-			s2.push(s1.pop());
-			break;
-		case '>':
-			if (s2.top == 0)
+			case '>':
+				if (s2.size() == 0) break;
+				s1.push_back(s2.back()); s2.pop_back();
 				break;
-			s1.push(s2.pop());
-			break;
-		case '-':
-			if(s1.top == 0)
+			case '-':
+				if (s1.size() == 0) break;
+				s1.pop_back();
 				break;
-			s1.pop();
-			break;
-		default:
-			s1.push(s[i]);
-			break;
+			default:
+				s1.push_back(s[i]);
+				break;
+			}
 		}
-	}
-
-}
-
-int main()
-{
-	cin >> TC;
-	for (int t = 0; t < TC; t++)
-	{
-		inputData();
-		solution();
-		s1.print();
-		s2.reversePrint();
-		cout << "\n";
-		
+		for (int i = 0; i < s1.size(); i++) printf("%c", s1[i]);
+		for(int i=s2.size()-1; i>=0; i--) printf("%c", s2[i]);
+		printf("\n");
 	}
 	return 0;
 }

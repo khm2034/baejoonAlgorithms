@@ -1,106 +1,40 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
-
-using namespace std;
-
-void input();
-void solution();
-void findNum(int x, int y);
-void result();
-
-int map[27][27] = { 0, };
-int visit[27][27] = { 0, };
-//string inputVal;
-int mapSize =0;
-int dangiNum = 1;
-int houseNum[400];
-vector<int> printHouseNum;
-
-int dx[4] = { 1, 0, -1, 0 };
-int dy[4] = { 0, 1, 0, -1 };
-
-int main()
-{
-	input();
-	solution();
-	result();
+#include<cstdio>
+#include<queue>
+#include<algorithm>
+#include<vector>
+struct p { int x, y; };
+std::queue<p> q;
+std::vector<int> vec;
+int N, v[27][27], dx[4] = { 1,0,-1,0 }, dy[4] = { 0,1,0,-1 };
+char m[27][27];
+bool safe(int x, int y) {
+	return x >= 0 && x < N && y >= 0 && y < N;
+}
+void bfs(int x, int y) {
+	int c = 1;
+	q.push({ x, y });
+	v[y][x] = 1;
+	while (!q.empty()) {
+		p t = q.front(); q.pop();
+		for (int i = 0, tx, ty; i < 4; i++) {
+			tx = t.x + dx[i], ty = t.y + dy[i];
+			if (safe(tx, ty) && !v[ty][tx] && m[ty][tx] == '1') {
+				v[ty][tx] = 1;
+				q.push({ tx, ty });
+				c++;
+			}
+		}
+	}
+	vec.push_back(c);
+}
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) scanf("%s", m[i]);
+	for (int i = 0; i < N; i++) for (int j = 0; j < N; j++) {
+		if (m[i][j] == '1' && !v[i][j]) bfs(j, i);
+	}
+	std::sort(vec.begin(), vec.end());
+	printf("%d\n", vec.size());
+	for (int a : vec) printf("%d\n", a);
 	return 0;
-}
-
-void input()
-{
-	for (int i = 0; i < 27; i++)
-	{
-		for (int j = 0; j < 27; j++)
-		{
-			map[i][j] = -1;
-			visit[i][j] = -1;
-		}
-
-		houseNum[i] = 0;
-	}
-
-	cin >> mapSize;
-
-	for (int i = 1; i < mapSize+1; i++)
-	{
-		char inputVal[27];
-		cin >> inputVal;
-
-		for (int j = 0; inputVal[j]!=NULL; j++)
-		{
-			map[i][j+1] = inputVal[j] - '0';
-			if (map[i][j + 1] == 1)
-			{
-				visit[i][j + 1] = 0;
-			}
-		}
-	}
-}
-
-void solution()
-{
-	for (int i = 1; i < mapSize + 1; i++)
-	{
-		for (int j = 1; j < mapSize + 1; j++) 
-		{
-			if (visit[i][j] == 0)
-			{
-				findNum(i, j);
-				dangiNum++;
-			}
-		}
-	}
-}
-
-void findNum(int x, int y) 
-{
-	visit[x][y] = dangiNum;
-	houseNum[dangiNum] ++;
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (visit[x + dx[i]][y + dy[i]] == 0)
-		{
-			findNum(x + dx[i], y + dy[i]);
-		}
-	}
-}
-
-void result()
-{
-	for (int i = 1; i < dangiNum; i++)
-	{
-		printHouseNum.push_back(houseNum[i]);
-	}
-
-	sort(printHouseNum.begin(), printHouseNum.end());
-
-	cout << dangiNum - 1 << endl;
-	for (int i = 0; i < printHouseNum.size(); i++)
-	{
-		cout << printHouseNum[i] << endl;
-	}
 }
